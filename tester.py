@@ -4,7 +4,7 @@ import time
 import sys
 
 
-def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n"):
+def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n", p=True):
 
 	if os.system(f"gcc -Wall -Wextra -Werror {main} ex00/ft_putchar.c ex00/rush0{x}.c -o rush{x}") != 0:
 		print(f"\033[93mRush0{x}\033[0m: \033[91mFail to compile\033[0m", end=form, flush=True)
@@ -20,8 +20,12 @@ def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n"):
 
 	if os.system(f"diff tmp.gcook tmp.dan > /dev/null") != 0:
 		print(f"\033[93mRush0{x}\033[0m: \033[91mKO\033[0m", end=form, flush=True)
+		if not p:
+			print("-> Check manually.", end=form, flush=True)
 	else:
 		print(f"\033[93mRush0{x}\033[0m: \033[92mKO\033[0m", end=form, flush=True)
+		if not p:
+			print("-> CHECK FOR CHEATING!", end=form, flush=True)
 
 	os.system(f"rm sol{x} rush{x} tmp.gcook tmp.dan")
 	return None
@@ -45,6 +49,8 @@ def core(rush, form="\n"):
 
 		x, y = d[i]
 		write_main(x, y)
+		if i in [6, 7, 8, 9]:
+			executor(rush, main='main.c', tmain='main.c', form=form, p=False)
 		executor(rush, main='main.c', tmain='main.c', form=form)
 
 	os.system(f"rm main.c")
