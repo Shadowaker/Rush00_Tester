@@ -19,7 +19,6 @@ def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n", p=True):
 	os.system(f"./sol{x} > tmp.dan")
 
 	if os.system(f"diff tmp.gcook tmp.dan > /dev/null") != 0:
-		print(f"\033[93mRush0{x}\033[0m: \033[91mKO\033[0m", end=form, flush=True)
 		if not p:
 			print("-> Check manually.", end=form, flush=True)
 	else:

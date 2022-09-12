@@ -6,7 +6,7 @@
 /*   By: dridolfo <dridolfo@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 23:00:25 by dridolfo          #+#    #+#             */
-/*   Updated: 2022/09/11 23:02:21 by dridolfo         ###   ########.fr       */
+/*   Updated: 2022/09/12 09:38:16 by dridolfo         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,8 @@ int	rush(int x, int y)
 	coord = malloc(sizeof(int) * 2);
 	el[0] = 'A';
 	el[1] = 'C';
-	el[2] = 'A';
-	el[3] = 'C';
+	el[2] = 'C';
+	el[3] = 'A';
 	el[4] = 'B';
 	el[5] = 'B';
 	coord[0] = x;
