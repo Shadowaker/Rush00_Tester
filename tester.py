@@ -3,6 +3,40 @@ import os
 import time
 import sys
 
+HEADER = '''
+
+88888888ba   88        88   ad88888ba   88        88        ,a8888a,        ,a8888a,
+88      "8b  88        88  d8"     "8b  88        88      ,8P"'  `"Y8,    ,8P"'  `"Y8,
+88      ,8P  88        88  Y8,          88        88     ,8P        Y8,  ,8P        Y8,
+88aaaaaa8P'  88        88  `Y8aaaaa,    88aaaaaaaa88     88          88  88          88
+88""""88'    88        88    `"""""8b,  88""""""""88     88          88  88          88
+88    `8b    88        88          `8b  88        88     `8b        d8'  `8b        d8'
+88     `8b   Y8a.    .a8P  Y8a     a8P  88        88      `8ba,  ,ad8'    `8ba,  ,ad8'
+88      `8b   `"Y8888Y"'    "Y88888P"   88        88        "Y8888P"        "Y8888P"
+
+
+
+888888888888  88888888888  ad88888ba  888888888888  88888888888  88888888ba
+     88       88          d8"     "8b      88       88           88      "8b
+     88       88          Y8,              88       88           88      ,8P
+     88       88aaaaa     `Y8aaaaa,        88       88aaaaa      88aaaaaa8P'
+     88       88"""""       `"""""8b,      88       88"""""      88""""88'
+     88       88                  `8b      88       88           88    `8b
+     88       88          Y8a     a8P      88       88           88     `8b
+     88       88888888888  "Y88888P"       88       88888888888  88      `8b
+
+
+'''
+
+def check_ctrl(path):
+	tmp = ["wrong", "error"]
+
+	with open(path, "r") as f:
+		reading = f.read()
+	if len([x for x in tmp if x in reading.lower()]) != 0:
+		return True
+	return False
+
 
 def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n", p=True):
 
@@ -18,15 +52,17 @@ def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n", p=True):
 
 	os.system(f"./sol{x} > tmp.dan")
 
-	if os.system(f"diff tmp.gcook tmp.dan > /dev/null") != 0:
-		if not p:
-			print("-> Check manually.", end=form, flush=True)
+	if os.system(f"diff tmp.gcook tmp.dan > ctrl") != 0:
+		if check_ctrl:
+			print(f"\033[91mRush0{x}\033[0m: \033[92mKO\033[0m", end=form, flush=True)
+			if not p:
+				print("-> Check manually.", end=form, flush=True)
 	else:
-		print(f"\033[93mRush0{x}\033[0m: \033[92mKO\033[0m", end=form, flush=True)
 		if not p:
 			print("-> CHECK FOR CHEATING!", end=form, flush=True)
+	print(f"\033[93mRush0{x}\033[0m: \033[92mOK\033[0m", end=form, flush=True)
 
-	os.system(f"rm sol{x} rush{x} tmp.gcook tmp.dan")
+	os.system(f"rm sol{x} rush{x} tmp.gcook tmp.dan ctrl")
 	return None
 
 def write_main(x, y):
@@ -55,6 +91,8 @@ def core(rush, form="\n"):
 	os.system(f"rm main.c")
 
 def main():
+	print("\033[94m", HEADER, "\033[0m\n\n")
+
 	if "ex00" not in os.listdir("./"):
 		print("Help I'm stupid, please check the files...")
 		return None
