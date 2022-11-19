@@ -2,6 +2,8 @@
 import os
 import time
 import sys
+from multiprocessing import Process
+
 
 HEADER = '''
 
@@ -38,7 +40,12 @@ def check_ctrl(path):
 	return False
 
 
-def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n", p=True):
+def exec_diff(x, form):
+	if os.system(f"./rush{x} > tmp.culo") != 0:
+		print(f"\033[93mRush0{x}\033[0m: \033[91mFail to execute\033[0m", end=form, flush=True)
+
+
+def executor(x, main, tmain, form, p):
 
 	if os.system(f"gcc -Wall -Wextra -Werror {main} ex00/ft_putchar.c ex00/rush0{x}.c -o rush{x}") != 0:
 		print(f"\033[93mRush0{x}\033[0m: \033[91mFail to compile\033[0m", end=form, flush=True)
@@ -46,24 +53,29 @@ def executor(x, main="ex00/main.c", tmain="rush/main.c", form="\n", p=True):
 
 	os.system(f"gcc -Wall -Wextra -Werror {tmain} rush/ft_putchar.c rush/rush0{x}.c -o sol{x}")
 
-	if os.system(f"./rush{x} > tmp.gcook") != 0:
-		print(f"\033[93mRush0{x}\033[0m: \033[91mFail to execute\033[0m", end=form, flush=True)
+	p = Process(target=exec_diff, args=(x, form, ), daemon=True)
+	p.start()
+	p.join(6)
+
+	if p.is_alive():
+		print(f"\033[93mRush0{x}\033[0m: \033[91mTimeout\033[0m", end=form, flush=True)
+		p.kill()
 		return None
 
 	os.system(f"./sol{x} > tmp.dan")
 
-	if os.system(f"diff tmp.gcook tmp.dan > ctrl") != 0:
-		if check_ctrl:
-			print(f"\033[91mRush0{x}\033[0m: \033[92mKO\033[0m", end=form, flush=True)
-			if not p:
-				print("-> Check manually.", end=form, flush=True)
+	if os.system(f"diff tmp.culo tmp.dan > ctrl") != 0:
+		print(f"\033[93mRush0{x}\033[0m: \033[91mKO\033[0m", end=form, flush=True)
+		if check_ctrl("./ctrl") and not p:
+			print("-> Check manually.", end=form, flush=True)
 	else:
+		print(f"\033[93mRush0{x}\033[0m: \033[92mOK\033[0m", end=form, flush=True)
 		if not p:
-			print("-> CHECK FOR CHEATING!", end=form, flush=True)
-	print(f"\033[93mRush0{x}\033[0m: \033[92mOK\033[0m", end=form, flush=True)
+			print("\033[91m-> CHECK FOR CHEATING!\033[0m", end=form, flush=True)
 
-	os.system(f"rm sol{x} rush{x} tmp.gcook tmp.dan ctrl")
+	os.system(f"rm sol{x} rush{x} tmp.culo tmp.dan ctrl")
 	return None
+
 
 def write_main(x, y):
 
@@ -77,7 +89,7 @@ def write_main(x, y):
 
 def core(rush, form="\n"):
 	d = {0: (1, 1), 1: (10, 10), 2: (42, 42), 3: (100, 100), 4: (200, 200), 5: (500, 500),
-		6: (2147483647, -2147483648), 7: (-2147483648, 2147483647), 8: (-33, 23),
+		6: (2147483647, -2147483648), 7: (-2147483648, 2147483647), 8: (-3, 233),
 		9: (-2147483648, -2147483648), 10: (0, 0), 11: (-42, -42)}
 
 	for i in range(0, 12):
@@ -85,10 +97,14 @@ def core(rush, form="\n"):
 		x, y = d[i]
 		write_main(x, y)
 		if i in [6, 7, 8, 9]:
-			executor(rush, main='main.c', tmain='main.c', form=form, p=False)
-		executor(rush, main='main.c', tmain='main.c', form=form)
+			executor(rush, 'main.c', 'main.c', form, False)
+			#executor(rush, main='main.c', tmain='main.c', form=form, p=False)
+		else:
+			executor(rush, 'main.c', 'main.c', form, False)
+		# executor(rush, main='main.c', tmain='main.c', form=form)
 
 	os.system(f"rm main.c")
+
 
 def main():
 	print("\033[94m", HEADER, "\033[0m\n\n")
@@ -119,7 +135,7 @@ def main():
 
 	except Exception as _:
 		print("Error: not enough argument or wrong parameter.\n\n",
-			"\033[92mExample\033[0m]: python3 tester.py method\n\n",
+			"\033[92mExample\033[0m: python3 tester.py method\n\n",
 			"\033[92mmethods: [0, 1, 2, 3, 4, b]\033[0m")
 
 
